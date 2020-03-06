@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const bodyParser = require('body-parser');
 const mustacheExpress = require('mustache-express');
 const PORT = process.env.PORT || 3000;
 
@@ -7,6 +8,19 @@ const PORT = process.env.PORT || 3000;
 app.engine('mustache', mustacheExpress());
 app.set('views', './views');
 app.set('view engine', 'mustache');
+app.use(bodyParser.urlencoded( {extended: false}) );
+
+app.post('/register', (req,res) => {
+
+  let username = req.body.username;
+  let password = req.body.password;
+
+  console.log(username);
+  console.log(password);
+
+  res.send('REGISTER');
+
+});
 
 app.get('/register', (req, res) => {
   res.render('register');
