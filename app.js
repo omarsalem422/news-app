@@ -18,33 +18,37 @@ app.use(bodyParser.urlencoded( {extended: false}) );
 
 const db = pgp(CONNECTION_STRING);
 
-app.post('/register', (req,res) => {
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+
+// app.post('/login', (req, res) => {
+
+//   let username = req.body.username;
+//   let password = req.body.password;
+
+
+// });
+app.post('/login', (req,res) => {
 
   let username = req.body.username;
   let password = req.body.password;
-  
-  db.oneOrNone('SELECT userid FROM users WHERE username = $1', [username])
-  .then ((user) => {
+  db.oneOrNone('SELECT userid, username, password FROM users WHERE username = $1', [username])
+  .then((user) => {
     if(user) {
-      res.render('register', {message: "User name already exists"})
-    } else {
-      // INSERT user name into the db
-      // db.none('INSERT INTO users(username, password) VALUES($1, $2)', [username, password])
-      // .then(() => {
-      //   res.send('SUCCESS')
-      // })
-      bcrypt .hash(password, SALT_ROUNDS, function(error, hash) {
-        if (error == null) {
-          db.none('INSERT INTO users(username, password) VALUES($1, $2)',[username, hash])
-          .then(() => {
-            res.send('SUCCESS')
-          })
+      bcrypt.compare(password, user.password, function(error, result) {
+        if(result) {
+          res.send('SUCCESS!');
+        } else {
+          res.render('login', {message: 'Invalid user name or password!'});
         }
-      } )
+      })
+    } else {
+      res.render('login', {message: 'Invalid user name or password!'});
     }
-  })
- 
 
+  } )
+ 
 });
 
 app.get('/register', (req, res) => {
