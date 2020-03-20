@@ -5,14 +5,16 @@ const mustacheExpress = require('mustache-express');
 const pgp = require('pg-promise')();
 const bcrypt = require('bcrypt');
 const session = require('express-session');
+const path = require('path');
 
 const PORT = process.env.PORT || 3000;
 const CONNECTION_STRING = 'postgres://localhost:5433/newsdb';
 const SALT_ROUNDS = 10;
 
+const VIEWS_PATH = path.join(__dirname, '/views');
 // Configure the view engine
-app.engine('mustache', mustacheExpress());
-app.set('views', './views');
+app.engine('mustache', mustacheExpress(VIEWS_PATH + '/partials', '.mustache'));
+app.set('views', VIEWS_PATH);
 app.set('view engine', 'mustache');
 
 app.use(bodyParser.urlencoded( {extended: false}) );
@@ -32,13 +34,11 @@ app.get('/login', (req, res) => {
   res.render('login');
 });
 
-// app.post('/login', (req, res) => {
+ app.post('/register', (req, res) => {
+  //res.render('register');
+  console.log('Posting from register page ..')
+ });
 
-//   let username = req.body.username;
-//   let password = req.body.password;
-
-
-// });
 app.post('/login', (req,res) => {
 
   let username = req.body.username;
